@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>My IOTA Leaderboard</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Galada|Ubuntu:400,500,700" rel="stylesheet">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+    <main>
+      <header class="header">
+        <p class="header__title">My <span><img class="header__logo" src="logo.png" /></span> Leaderboard</p>
+        <nav>
+          <div class="nav-right hidden-xs">
+            <div class="button" id="btn">
+              <div class="bar top"></div>
+              <div class="bar middle"></div>
+              <div class="bar bottom"></div>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <section class="leaderboard">
+        <table class="table-fill">
+          <thead>
+            <tr>
+              <th class="rank__title">Rank</th>
+              <th class="address__title">Name</th>
+              <th class="amount__title">Message</th>
+              <th class="full__title">Value</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard">
+            <tr>
+              <td class="iota__rank"></td>
+              <td class="iota__name"></td>
+              <td class="iota__message">Nothing here right now. Generate an address and tell someone (or you yourself) to send a transaction with a message to it.</td>
+              <td class="iota__value"></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Sidebar -->
+    <div class="sidebar donotdisplay">
+      <ul class="sidebar-list">
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-anchor" data-toggle="collapse" data-target="#setSeed" aria-expanded="false" aria-controls="setSeed">My Seed</a>
+          <div class="collapse" id="setSeed">
+            <div class="well" id="enterSeed">
+              <div class="form-group">
+                <input type="password" id="userSeed" class="form-control" placeholder="Your Seed">
+              </div>
+              <button type="button" id="seedSubmit" class="btn btn-default">Submit</button>
+            </div>
+          </div>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-anchor" data-toggle="collapse" data-target="#getAddresses" aria-expanded="false" aria-controls="getAddresses">My Addresses</a>
+          <div class="collapse" id="getAddresses">
+            <div class="genAddress__div">
+              <div id="overlay">
+                <div class="panel panel-danger">
+                  <div class="panel-heading">Generating Address</div>
+                  <div class="panel-body">
+                    <p>Currently generating your address. This can take anywhere between 1 - 20minutes so be patient. Once your address was generated this note will disappear.</p>
+                  </div>
+                </div>
+              </div>
+              <button type="button" id="genAddress" class="btn btn-success">Generate Address</button>
+              <div id="allAddresses">
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <script src='js/jquery.min.js'></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/index.js"></script>
+  </body>
+</html>
