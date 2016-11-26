@@ -32,7 +32,7 @@ $(document).ready(function() {
       }
 
       if (seed.length > 81) {
-        seed = seed.slice(0, 82);
+        seed = seed.slice(0, 81);
       }
   }
 
@@ -123,6 +123,11 @@ $(document).ready(function() {
     $.post("http://localhost:14265", JSON.stringify(genAddressCmd), function(data) {
       // We remove the "Generating Address" notice again
       $("#overlay").css("display", "none");
+
+      if (data.error) {
+        var html = '<div class="alert alert-info alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Success!</strong> You have successfully sent your transaction. If you want to make another one make sure that this transaction is confirmed first (check in your client).</div>'
+        $("#allAddresses").html(html);
+      }
 
       // We add the new address to the address set
       addressList.push(data.address);

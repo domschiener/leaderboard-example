@@ -29,6 +29,10 @@ $(document).ready(function() {
       while (seed.length < 81) {
           seed += "9";
       }
+
+      if (seed.length > 81) {
+        seed = seed.slice(0, 81);
+      }
   }
 
   //
@@ -37,7 +41,7 @@ $(document).ready(function() {
   function updateAddressHTML() {
     // get the last added address in the list of addresses
     var address = addressList[addressList.length - 1];
-    
+
     if (!address)
       return
 
@@ -99,8 +103,8 @@ $(document).ready(function() {
         // If the tx value is 0, then it was a new address generated
         // If it's above 0. then we received some new IOTA tokens
         if (txValue === 0) {
-
-          addressList.push(tx.address);
+          var address = Curl.generateChecksum(tx.address);
+          addressList.push(address);
         }
       })
 
@@ -226,7 +230,7 @@ $(document).ready(function() {
                   notEnded = false;
 
                   // Remove the trailing 9's from tryte data chunk .
-                  tryteChunk = tryteChunk.slice(0, tryteChunk.length - (trytesToCheck.length - j))
+                  tryteChunk = tryteChunk.slice(0, tryteChunk.length - (trytesToCheck.length - (j + 1)))
                   break;
                 }
 
@@ -273,29 +277,87 @@ $(document).ready(function() {
   // Generate address function
   //
   function genAddress() {
-    // Command to be sent to the IOTA API
-    // Generates a new address for the specified seed and security level
-    var genAddressCmd = {
-      'command': 'generateNewAddress',
-      'seed': seed,
-      'securityLevel': 1,
-      'minWeightMagnitude': 13
-    }
 
-    // We make a POST request via jQuery. The command is stringified
-    $.post("http://localhost:14265", JSON.stringify(genAddressCmd), function(data) {
-      console.log("success")
-      // We remove the "Generating Address" notice again
-      $("#overlay").css("display", "none");
+    $.when(
 
-      // We add the new address to the address set
-      addressList.push(data.address);
+      // Get an address
+      getNewAddress(seed),
+      // As well as the latest milestone index
+      getNodeInfo()
 
-      // Update the HTML on the site
-      updateAddressHTML()
-    }, "json")
+    ).done(function(newAddress, nodeInfo) {
+
+      var address = newAddress[0].address;
+      var milestoneIndex = nodeInfo[0].milestoneIndex;
+
+      $.when(
+
+        // Get the latest milestone
+        getMilestone(milestoneIndex)
+
+      ).done(function(newMilestone) {
+
+        if (newMilestone.exception) return console.log(newMilestone.exception);
+        console.log("Generating your address from your private key. Getting tips and preparing the transfer now (this can take a few minutes).");
+
+        var milestone = newMilestone.milestone;
+
+        $.when(
+
+          // Tip selection
+          getTxToApprove(milestone),
+          // Prepare the trytes (transaction data) for our transaction
+          prepareTransfers(address, '0', '')
+
+        ).done(function(txsToApprove, preparedTrytes) {
+
+          // Tangle not solid check
+          if (txsToApprove.error) return console.log(txsToApprove.error);
+          console.log("Successfully generated the trytes for your address transaction. Doing the PoW now (this can take a few minutes).");
+
+          var branchTx = txsToApprove[0].branchTransaction;
+          var trunkTx = txsToApprove[0].trunkTransaction;
+          var transferTrytes = preparedTrytes[0].trytes;
+
+
+          // Attach the transaction to the Tangle
+          // Wait for callback and then broadcast and store it
+          // This API call can take several minutes
+          console.log(branchTx, trunkTx);
+          console.log(transferTrytes);
+          attachToTangle(branchTx, trunkTx, transferTrytes).done(function(data) {
+
+            if (data.exception) return console.log(data.exception);
+            console.log("Successfully attached your address to the tangle. Broadcasting it now.");
+            console.log(data.trytes);
+            // Broadcast the transaction to all neighbors
+            broadcastTransactions(data.trytes).done(function(success) {
+
+              if (success.exception) return console.log(success.exception);
+              console.log("Successfully broadcast your transasction. Storing it now.");
+
+              // Store the transaction in the local tangle
+              storeTransactions(data.trytes).done(function(finished) {
+
+                if (finished.exception) return console.log(finished.exception);
+
+                console.log("Successfully generated, attached to the Tangle, broadcast and stored your address " + address);
+
+                // We remove the CSS overlay
+                $("#overlay").css("display", "none");
+
+                // We add the new address to the address set
+                addressList.push(address);
+
+                // Update the HTML on the site
+                updateAddressHTML()
+              })
+            })
+          })
+        })
+      })
+    })
   }
-
 
   //
   // Menu Open/Close
@@ -324,6 +386,7 @@ $(document).ready(function() {
   // Generate a new address
   //
   $("#genAddress").on("click", function() {
+
     if (!seed)
       return
 
