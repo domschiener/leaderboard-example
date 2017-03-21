@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html >
-  <head>
+<html>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,132 +13,126 @@
     <link href="css/style.css" rel="stylesheet">
     <link href="css/send.css" rel="stylesheet">
 
-    <script type="text/javascript" src='js/jquery.min.js'></script>
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/checksum/converter.js"></script>
-    <script type="text/javascript" src="js/checksum/curl.js"></script>
-    <script type="text/javascript" src="js/iotaApiCalls.js"></script>
+    <script type="text/javascript" src="js/iota.min.js"></script>
+
+    <script type="text/javascript" src="js/helpers/updateBalanceHTML.js"></script>
+    <script type="text/javascript" src="js/helpers/updateAddressHTML.js"></script>
     <script type="text/javascript" src="js/send.js"></script>
-  </head>
-  <body>
+</head>
+<body>
     <main>
-      <header class="header">
-        <p class="header__title">My <span><img class="header__logo" src="images/logo.png" /></span> Leaderboard</p>
-        <nav>
-          <div class="nav-right hidden-xs">
-            <div class="button" id="btn">
-              <div class="bar top"></div>
-              <div class="bar middle"></div>
-              <div class="bar bottom"></div>
+        <header class="header">
+            <p class="header__title">My <span><img class="header__logo" src="images/logo.png" /></span> Leaderboard</p>
+            <nav>
+                <div class="nav-right hidden-xs">
+                    <div class="button" id="btn">
+                        <div class="bar top"></div>
+                        <div class="bar middle"></div>
+                        <div class="bar bottom"></div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <section class="send__section">
+            <div class="send">
+                <div class="send__header">
+                    <p class="send__header-title">Send Message</p>
+                </div>
+                <div class="send__body">
+                    <div class="row">
+
+                        <div class="col-xs-12 send__body-title">
+                            <p class="send__body-balance"><img class="send__logo" src="images/logo-black.png" /> Balance: <span class="label label-primary" id="iota__balance">0</span></p>
+                        </div>
+
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label for="name">Your Name</label>
+                                <input type="text" maxlength="16" class="form-control" id="name" placeholder="Enter Name">
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label for="value">Value</label>
+                                <input type="number" class="form-control" id="value" placeholder="Value to Send">
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class = "form-group">
+                                <label for="address">Recipient Address</label>
+                                <input type="text" class="form-control" id="address" placeholder="IOTA address of recipient">
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class = "form-group">
+                                <label for="message">Text Area</label>
+                                <textarea id="message" class="form-control" rows="3" placeholder="Message to send"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="send__button">
+                            <button class="btn btn-success btn-lg" id="submit">Submit</button>
+                        </div>
+
+                    </div>
+
+                    <!-- Message to be displayed once successfully sent -->
+                    <div id="send__success"></div>
+                    <!-- -->
+
+                    <!-- Loading screen while doing PoW -->
+                    <div id="send__waiting">
+                        <div class="row">
+                            <ul class="bokeh">
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                            </ul>
+                        </div>
+                        <div class="send__waiting-title">
+                            <p>Doing a lot of Proof of Work. Please be patient!</p>
+                        </div>
+                        <div class="alert alert-success" role="alert">
+                            <p>While waiting, you can read more about the <a href="https://dev.iota.org" class="alert-link">IOTA API here.</a> Or you can read our Blog on <a href="https://medium.com/iotatangle" class="alert-link">Medium</a>. Always useful to know this stuff.<p>
+                        </div>
+                    </div>
+                    <!-- -->
+                </div>
             </div>
-          </div>
-        </nav>
-      </header>
-
-      <section class="send__section">
-        <div class="send">
-          <div class="send__header">
-            <p class="send__header-title">Send Message</p>
-          </div>
-          <div class="send__body">
-            <div class="row">
-
-              <div class="col-xs-12 send__body-title">
-                <p class="send__body-balance"><img class="send__logo" src="images/logo-black.png" /> Balance: <span class="label label-primary" id="iota__balance">0</span></p>
-              </div>
-
-              <div class="col-xs-6">
-                <div class="form-group">
-                   <label for="name">Your Name</label>
-                   <input type="text" maxlength="16" class="form-control" id="name" placeholder="Enter Name">
-                </div>
-              </div>
-              <div class="col-xs-6">
-                <div class="form-group">
-                   <label for="value">Value</label>
-                   <input type="number" class="form-control" id="value" placeholder="Value to Send">
-                </div>
-              </div>
-
-              <div class="col-xs-12">
-                <div class = "form-group">
-                   <label for="address">Recipient Address</label>
-                   <input type="text" class="form-control" id="address" placeholder="IOTA address of recipient">
-                </div>
-              </div>
-
-              <div class="col-xs-12">
-                <div class = "form-group">
-                   <label for="message">Text Area</label>
-                   <textarea id="message" class="form-control" rows="3" placeholder="Message to send"></textarea>
-                </div>
-              </div>
-
-              <div class="send__button">
-                <button class="btn btn-success btn-lg" id="submit">Submit</button>
-              </div>
-            </div>
-
-            <!-- Message to be displayed once successfully sent -->
-            <div id="send__success"></div>
-            <!-- -->
-
-            <!-- Loading screen while doing PoW -->
-            <div id="send__waiting">
-              <div class="row">
-                <ul class="bokeh">
-                  <li></li>
-                  <li></li>
-                  <li></li>
-                  <li></li>
-                </ul>
-              </div>
-              <div class="send__waiting-title">
-                <p>Doing a lot of Proof of Work. Please be patient!</p>
-              </div>
-              <div class="alert alert-success" role="alert">
-                <p>While waiting, you can read more about the <a href="https://iota.readme.io" class="alert-link">IOTA API here.</a> Or you can read our Blog on <a href="https://medium.com/iotatangle" class="alert-link">Medium</a>. Always useful to know this stuff.<p>
-              </div>
-            </div>
-            <!-- -->
-
-          </div>
-        </div>
-      </section>
+        </section>
     </main>
 
-    <div class="sidebar donotdisplay">
-      <ul class="sidebar-list">
-        <li class="sidebar-item">
-          <a href="#" class="sidebar-anchor" data-toggle="collapse" data-target="#setSeed" aria-expanded="false" aria-controls="setSeed">My Seed</a>
-          <div class="collapse" id="setSeed">
-            <div class="well" id="enterSeed">
-              <div class="form-group">
-                <input type="password" id="userSeed" class="form-control" placeholder="Your Seed">
-              </div>
-              <button type="button" id="seedSubmit" class="btn btn-default">Submit</button>
-            </div>
-          </div>
-        </li>
-        <li class="sidebar-item">
-          <a href="#" class="sidebar-anchor" data-toggle="collapse" data-target="#getAddresses" aria-expanded="false" aria-controls="getAddresses">My Addresses</a>
-          <div class="collapse" id="getAddresses">
-            <div class="genAddress__div">
-              <div id="overlay">
-                <div class="panel panel-danger">
-                  <div class="panel-heading">Generating Address</div>
-                  <div class="panel-body">
-                    <p>Currently generating your address. This can take anywhere between 1 - 20minutes so be patient. Once your address was generated this note will disappear.</p>
-                  </div>
-                </div>
-              </div>
-              <button type="button" id="genAddress" class="btn btn-success">Generate Address</button>
-              <div id="allAddresses">
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </body>
+        <div class="sidebar donotdisplay">
+            <ul class="sidebar-list">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-anchor" data-toggle="collapse" data-target="#setSeed" aria-expanded="false" aria-controls="setSeed">My Seed</a>
+                    <div class="collapse" id="setSeed">
+                        <div class="well" id="enterSeed">
+                            <div class="form-group">
+                                <input type="password" id="userSeed" class="form-control" placeholder="Your Seed">
+                            </div>
+                            <button type="button" id="seedSubmit" class="btn btn-default">Submit</button>
+                        </div>
+                    </div>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-anchor" data-toggle="collapse" data-target="#getAddresses" aria-expanded="false" aria-controls="getAddresses">My Addresses</a>
+                    <div class="collapse" id="getAddresses">
+                        <div class="genAddress__div">
+                            <button type="button" id="genAddress" class="btn btn-success">Generate Address</button>
+                            <div id="allAddresses">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+</body>
 </html>
