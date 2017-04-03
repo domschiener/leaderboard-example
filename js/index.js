@@ -1,8 +1,6 @@
 $(document).ready(function() {
 
-    //
-    //  Instantiate IOTA
-    //
+    //  Instantiate IOTA with provider 'http://localhost:14265'
     var iota = new IOTA({
         'host': 'http://localhost',
         'port': 14265
@@ -134,7 +132,7 @@ $(document).ready(function() {
             return
         }
 
-        // Deterministically generates a new address for the specified seed
+        // Deterministically generates a new address for the specified seed with a checksum
         iota.api.getNewAddress( seed, { 'checksum': true }, function( e, address ) {
 
             if (!e) {
