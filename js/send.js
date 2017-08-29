@@ -103,7 +103,7 @@ $(document).ready(function() {
         console.log("Sending Transfer", transfer);
 
         // We send the transfer from this seed, with depth 4 and minWeightMagnitude 18
-        iota.api.sendTransfer(seed, 4, 18, transfer, function(e) {
+        iota.api.sendTransfer(seed, 4, 9, transfer, function(e) {
 
             if (e){
 
