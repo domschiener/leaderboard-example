@@ -48,11 +48,18 @@ $(document).ready(function() {
             console.log("Account data", accountData);
 
             // Update address in case it's not defined yet
-            if (!address && accountData.addresses[0]) {
+            try{
+                if (!address && accountData.addresses[0]) {
 
                 address = iota.utils.addChecksum(accountData.addresses[accountData.addresses.length - 1]);
 
-                updateAddressHTML(address);
+                    updateAddressHTML(address);
+                }
+            } catch(e) {
+
+                    var html = '<div class="alert alert-danger" align="center">Something went wrong. Make sure your local IRI is running on port 14265</div>';
+                    $("#enterSeed").html(html);
+                    return;
             }
 
             var transferList = [];
